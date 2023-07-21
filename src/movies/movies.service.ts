@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Movie } from './entities/movie.entity';
+import { CreateMovieDto } from './dto/create-movie.dto';
 
 // service는 로직을 담당
 @Injectable()
@@ -10,8 +11,9 @@ export class MoviesService {
     return this.movies;
   }
 
-  getOne(id: string): Movie {
-    const movie = this.movies.find((movie) => movie.id === +id);
+  getOne(id: number): Movie {
+    console.log(typeof id);
+    const movie = this.movies.find((movie) => movie.id === id);
     if (!movie) {
       // 404 에러
       throw new NotFoundException(`Movie with ID ${id} not found.`);
@@ -19,13 +21,13 @@ export class MoviesService {
     return movie;
   }
 
-  deleteOne(id: string): void {
+  deleteOne(id: number): void {
     // 해당 id의 영화가 있는지 먼저 조회
     this.getOne(id);
-    this.movies = this.movies.filter((movie) => movie.id !== +id);
+    this.movies = this.movies.filter((movie) => movie.id !== id);
   }
 
-  create(movieData) {
+  create(movieData: CreateMovieDto) {
     this.movies.push({
       id: this.movies.length + 1,
       ...movieData,
@@ -33,7 +35,7 @@ export class MoviesService {
     return this.movies;
   }
 
-  update(id: string, updateData) {
+  update(id: number, updateData) {
     const movie = this.getOne(id);
     this.deleteOne(id);
     this.movies.push({ ...movie, ...updateData });
